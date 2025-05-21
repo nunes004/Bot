@@ -24,6 +24,18 @@ def generate_code(prompt_usuario):
             json=data,
             timeout=60
         )
-        return response.json()[0]["generated_text"]
+
+        if response.status_code != 200:
+            return f"Erro Hugging Face: {response.status_code} - {response.text}"
+
+        try:
+            json_data = response.json()
+            if not json_data or "generated_text" not in json_data[0]:
+                return f"Resposta inesperada: {json_data}"
+            return json_data[0]["generated_text"]
+
+        except Exception as e:
+            return f"Erro ao interpretar resposta: {str(e)} - Conteúdo bruto: {response.text}"
+
     except Exception as e:
         return f"Erro na requisição Hugging Face: {str(e)}"
