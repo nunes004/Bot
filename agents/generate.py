@@ -4,7 +4,8 @@ import os
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 headers = {
-    "Authorization": f"Bearer {HUGGINGFACE_API_KEY}"
+    "Authorization": f"Bearer {HUGGINGFACE_API_KEY}",
+    "Content-Type": "application/json"
 }
 
 def generate_code(prompt_usuario):
@@ -13,7 +14,11 @@ def generate_code(prompt_usuario):
     data = {
         "inputs": prompt,
         "parameters": {
-            "max_new_tokens": 500
+            "max_new_tokens": 300,
+            "temperature": 0.7
+        },
+        "options": {
+            "wait_for_model": True
         }
     }
 
@@ -27,11 +32,10 @@ def generate_code(prompt_usuario):
         response.raise_for_status()
         result = response.json()
 
-        # Retorno depende do formato da resposta
         if isinstance(result, list) and "generated_text" in result[0]:
             return result[0]["generated_text"]
         else:
-            return "⚠️ Erro: Resposta inesperada da Hugging Face."
+            return "⚠️ Erro: A resposta da API não contém texto gerado."
 
     except requests.exceptions.HTTPError as http_err:
         return f"Erro HTTP {response.status_code}: {response.text}"
