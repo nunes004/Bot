@@ -29,6 +29,7 @@ def generate_code(prompt_usuario):
             json=data,
             timeout=60
         )
+
         result = response.json()
 
         if isinstance(result, list) and "generated_text" in result[0]:
