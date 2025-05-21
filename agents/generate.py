@@ -12,8 +12,8 @@ def generate_code(prompt_usuario):
 
     data = {
         "inputs": prompt,
-        "options": {
-            "wait_for_model": True
+        "parameters": {
+            "max_new_tokens": 500
         }
     }
 
@@ -24,18 +24,16 @@ def generate_code(prompt_usuario):
             json=data,
             timeout=60
         )
+        response.raise_for_status()
+        result = response.json()
 
-        if response.status_code != 200:
-            return f"Erro Hugging Face: {response.status_code} - {response.text}"
+        # Retorno depende do formato da resposta
+        if isinstance(result, list) and "generated_text" in result[0]:
+            return result[0]["generated_text"]
+        else:
+            return "⚠️ Erro: Resposta inesperada da Hugging Face."
 
-        try:
-            json_data = response.json()
-            if not json_data or "generated_text" not in json_data[0]:
-                return f"Resposta inesperada: {json_data}"
-            return json_data[0]["generated_text"]
-
-        except Exception as e:
-            return f"Erro ao interpretar resposta: {str(e)} - Conteúdo bruto: {response.text}"
-
+    except requests.exceptions.HTTPError as http_err:
+        return f"Erro HTTP {response.status_code}: {response.text}"
     except Exception as e:
         return f"Erro na requisição Hugging Face: {str(e)}"
