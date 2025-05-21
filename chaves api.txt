@@ -1,0 +1,5 @@
+curl -X POST https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1 \
+-H "Authorization: Bearer hf_tJxOXyEHYFfZklVLjhAsQCohJjZZ" \
+-H "Content-Type: application/json" \
+-d '{"inputs": "Olá! Tudo bem?"}'
+OQCAMw
