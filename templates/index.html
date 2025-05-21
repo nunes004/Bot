@@ -1,0 +1,79 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Bot IA Programador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e1e;
+      color: #f1f1f1;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ccff;
+      text-align: center;
+    }
+    #chat {
+      border: 1px solid #444;
+      padding: 15px;
+      height: 400px;
+      overflow-y: scroll;
+      background: #2a2a2a;
+    }
+    .msg {
+      margin: 10px 0;
+    }
+    .user { color: #00ccff; }
+    .bot  { color: #99ff99; }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    #formulario {
+      display: flex;
+      margin-top: 10px;
+    }
+    #mensagem {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 Bot IA Programador</h1>
+  <div id="chat"></div>
+
+  <form id="formulario">
+    <input type="text" id="mensagem" placeholder="Digite sua pergunta aqui..." autocomplete="off" />
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("formulario");
+    const input = document.getElementById("mensagem");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      chat.innerHTML += `<div class="msg user"><b>Você:</b> ${texto}</div>`;
+      input.value = "";
+
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: texto })
+      });
+
+      const dados = await res.json();
+      chat.innerHTML += `<div class="msg bot"><b>IA:</b> ${dados.response}</div>`;
+      chat.scrollTop = chat.scrollHeight;
+    });
+  </script>
+</body>
+</html>
