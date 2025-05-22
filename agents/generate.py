@@ -29,14 +29,16 @@ def generate_code(prompt_usuario):
             json=data,
             timeout=60
         )
-
-        result = response.json()
-
-        if isinstance(result, list) and "generated_text" in result[0]:
-            return result[0]["generated_text"]
-        elif "error" in result:
-            return f"Erro Hugging Face: {result['error']}"
+        
+        # Verifica se a resposta foi bem-sucedida (código HTTP 200)
+        if response.status_code == 200:
+            result = response.json()
+            if isinstance(result, list) and "generated_text" in result[0]:
+                return result[0]["generated_text"]
+            else:
+                return f"Erro na resposta: A estrutura da resposta não é a esperada"
         else:
-            return "Resposta inesperada da IA."
-    except Exception as e:
-        return f"Erro na requisição Hugging Face: {str(e)}"
+            return f"Erro na requisição Hugging Face: {response.status_code}, {response.text}"
+
+    except requests.exceptions.RequestException as e:
+        return f"Erro na requisição: {str(e)}"
